@@ -4,6 +4,7 @@ import socket
 import sys
 from _thread import start_new_thread
 import time
+
 from config import *
 
 
@@ -52,7 +53,7 @@ class ServerSM(object):
             msg = conn.recv(1024)
             msg = decode(msg)[0]
             print('client sent: ', msg)
-
+            
             if msg == 'send_xml':
                 self.serve_xml(conn, addr, msg)
 

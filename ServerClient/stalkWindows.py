@@ -14,5 +14,5 @@ class StalkWindows(object):
         print(results)
 
 if __name__ == '__main__':
-    w = StalkWindows
+    w = StalkWindows()
     w.get_processes()
