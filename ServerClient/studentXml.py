@@ -35,10 +35,9 @@ class StudentXML(object):
             attribs = {'site_ip': site[1], 'web_browser': site[3]}  # TODO: wyszukaj po pid nazwę procesu
             site_name = str(os.popen("nslookup " + site[1] + " | findstr Name:").read())
             site_name = re.findall(r'Name:\s*(.+)', site_name)
-            print(site_name)
+
             if site_name:
                 et.SubElement(self.sites_element, 'site', attrib=attribs).text = site_name[0]
-
 
     def get_processes(self):
         results = str(os.popen("tasklist /FI \"STATUS eq RUNNING\" /FI \"USERNAME eq %USERNAME%\"").read())
@@ -46,7 +45,7 @@ class StudentXML(object):
         return results
 
     def get_sites(self):
-        results = str(os.popen("netstat -naob | findstr /i \":80 :443\"").read())
+        results = str(os.popen("netstat -naob | findstr /i \":80 :443\"").read())  # TODO: beznadziejnie działa - nie wszystko znajduje
         results = re.findall(r'\s*TCP\s*'
                              r'(\d{1,3}\.\d{1,3}\.\d{1,3}\.\d{1,3}:\d+)\s*'
                              r'(\d{1,3}\.\d{1,3}\.\d{1,3}\.\d{1,3}):\d+\s*'
