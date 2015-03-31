@@ -1,4 +1,5 @@
 import _socket as socket
+from encodings.utf_8_sig import decode, encode
 import struct
 import sys
 
@@ -9,6 +10,12 @@ PORT = 0
 class TCPSniffer:
     def __init__(self):
         self.s = self.connect()
+
+    def __enter__(self):
+        return self
+
+    def __exit__(self, exc_type, exc_val, exc_tb):
+        self.s.ioctl(socket.SIO_RCVALL, socket.RCVALL_OFF)
 
     def connect(self):
         s = socket.socket(socket.AF_INET, socket.SOCK_RAW, socket.IPPROTO_IP)
@@ -31,7 +38,7 @@ class TCPSniffer:
             sys.exc_info()
         return data[0]
 
-    def get_ip_data(self, data=None, data_type='Protocol'):
+    def get_ip_header(self, data=None, data_type='Protocol'):
         if not data:
             data = self.receive_data()
         unpacked_data = struct.unpack('!BBHHHBBH4s4s', data[:20])
@@ -42,7 +49,7 @@ class TCPSniffer:
             return unpacked_data[0] & 0xf
         if data_type == 'Differentiated Services':
             return unpacked_data[1]
-        if data_type == 'Total length':
+        if data_type == 'Total Length':
             return unpacked_data[2]
         if data_type == 'Identification':
             return unpacked_data[3]
@@ -61,11 +68,11 @@ class TCPSniffer:
         if data_type == 'Destination IP address':
             return socket.inet_ntoa(unpacked_data[9])
 
-    def get_tcp_data(self, data=None, data_type='Source Port'):
+    def get_tcp_header(self, data=None, data_type='Source Port'):
         if not data:
             data = self.receive_data()
-        if self.get_ip_data(data=data, data_type='Protocol') == 6:
-            unpacked_data = struct.unpack('!HHIIHHHH', data[20:40])
+        if self.get_ip_header(data=data, data_type='Protocol') == 6:
+            unpacked_data = struct.unpack('!HHIIHHHH', data[20:40])  # [20:40
 
             if data_type == 'Source Port':
                 return unpacked_data[0]
@@ -88,12 +95,22 @@ class TCPSniffer:
             if data_type == 'Urgent Pointer':
                 return unpacked_data[7]
 
+    def get_tcp_data(self, data=None):
+        if not data:
+            data = self.receive_data()
+        data_offset = self.get_tcp_header(data, 'Data Offset')
+        if data_offset:
+            try:
+                unpacked_data = struct.unpack("!%ds" % (data_offset*4),  data[40:data_offset*4+40])
+
+                return unpacked_data[0]
+            except:
+                pass
+
 
 if __name__ == '__main__':
-    tcpsniffer = TCPSniffer()
-    while True:
-        a = tcpsniffer.get_tcp_data(data_type='Urgent Pointer')
-        if a:
-            print(a)
-
-
+    with TCPSniffer() as tcpsniffer:
+        while True:
+            a = tcpsniffer.get_tcp_data()
+            if a:
+                print(a)
