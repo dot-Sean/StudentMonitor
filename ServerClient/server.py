@@ -50,19 +50,19 @@ class ServerSM(object):
 
     def client_recv(self, conn, addr):
         try:
-            msg = conn.recv(1024)
-            msg = decode(msg)[0]
-            print('client sent: ', msg)
-            
-            if msg == 'send_xml':
-                self.serve_xml(conn, addr, msg)
+            while True:
+                msg = conn.recv(1024)
+                msg = decode(msg)[0]
+                print('client sent: ', msg)
 
-            if msg == 'update_whitelist':  # TODO
-                pass
+                if msg == 'send_xml':
+                    self.serve_xml(conn, addr, msg)
 
-            if msg == 'send_image':  # TODO
-                pass
+                if msg == 'update_whitelist':  # TODO
+                    pass
 
+                if msg == 'send_image':
+                    self.serve_image(conn, addr, msg)
         except ConnectionResetError:
             print('force close', str(addr[1]))
         finally:
@@ -77,15 +77,35 @@ class ServerSM(object):
         if username is not None and not os.path.exists(username):
             os.makedirs(username)
 
-        f = open(username + '\\recv_file_' + str(time.strftime("%H-%M-%S")) + '.avi', 'wb')
+        f = open(username + '\\recv_xml_' + str(time.strftime("%H-%M-%S")) + '.xml', 'wb')
 
         print('Starting', msg, addr)
         l = conn.recv(1024)
-        while l:
+        while l != EOF_MSG.encode():
             f.write(l)
             l = conn.recv(1024)
         f.close()
-        print('Done ', msg)
+        print('Done', msg)
+        msg = None
+
+    def serve_image(self, conn, addr, msg):
+        username = None
+        for x in range(len(self.users_data) - 1, -1, -1):
+            if self.users_data[x][1] == addr[1]:
+                username = self.users_data[x][2]
+
+        if username is not None and not os.path.exists(username):
+            os.makedirs(username)
+
+        f = open(username + '\\recv_image_' + str(time.strftime("%H-%M-%S")) + '.jpg', 'wb')
+
+        print('Starting', msg, addr)
+        l = conn.recv(1024)
+        while l != EOF_MSG.encode():
+            f.write(l)
+            l = conn.recv(1024)
+        f.close()
+        print('Done', msg)
         msg = None
 
 if __name__ == '__main__':

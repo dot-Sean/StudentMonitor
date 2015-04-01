@@ -1,14 +1,16 @@
-from collections import OrderedDict
 import os
-import ssl
-from urllib.request import urlopen
+from threading import Thread
 import xml.etree.cElementTree as et
 import time
 import re
-import urllib
+from config import DOCUMENTS_PATH, XML_NAME
+from packetSniffer import TCPSniffer
+
 
 class StudentXML(object):
     def __init__(self, client_ip=None, username=None):
+        self.url_list = []
+
         self.my_path = os.path.join(os.path.dirname(__file__))
         self.root = et.Element('student')
         if client_ip:
@@ -20,13 +22,21 @@ class StudentXML(object):
         self.data_element = et.SubElement(self.root, 'data', attrib={'datetime': datetime_attrib})
 
         self.processes_element = et.SubElement(self.data_element, 'processes')
-        self.processes_to_tree()
 
         self.sites_element = et.SubElement(self.data_element, 'sites')
-        self.sites_to_tree()
 
         self.tree = et.ElementTree(self.root)
-        self.tree.write('filename.xml')
+
+    def generate_document(self, file_path=os.path.join(DOCUMENTS_PATH, XML_NAME)):
+        self.processes_to_tree()
+        self.sites_to_tree()
+        self.tree.write(file_path)
+
+        self.data_element.remove(self.processes_element)
+        self.processes_element = et.SubElement(self.data_element, 'processes')
+
+        self.data_element.remove(self.sites_element)
+        self.sites_element = et.SubElement(self.data_element, 'sites')
 
     def processes_to_tree(self):
         processes = self.get_processes()
@@ -35,28 +45,15 @@ class StudentXML(object):
             et.SubElement(self.processes_element, 'process', attrib=attribs).text = process[0]
 
     def sites_to_tree(self):
-        sites = self.get_sites()
-        #for site in sites:
-        #    attribs = {'site_ip': site[1], 'web_browser': site[3]}  # TODO: wyszukaj po pid nazwę procesu
-        #    site_name = str(os.popen("nslookup " + site[1] + " | findstr Name:").read())
-        #    site_name = re.findall(r'Name:\s*(.+)', site_name)
-#
-        #    if site_name:
-#
-        #        et.SubElement(self.sites_element, 'site', attrib=attribs).text = site_name[0]
+        temp_urls_list = self.url_list.copy()
 
-        sites = self.get_sites()
-        for site in sites:
-            try:
-                page = urlopen(r'http://' + site[1])
-                html = str(page.read())
-                title = re.findall(r'<title>(\w+)', html, re.I)
-                print(title)
-            except urllib.error.HTTPError:
-                print('HTTPError')
-            except urllib.error.URLError:
-                print('URLError')
-
+        urls = []
+        for i in temp_urls_list:
+            if i not in urls:
+                urls.append(i)
+        for url in urls:
+            attribs = {'url': url}
+            et.SubElement(self.sites_element, 'test', attrib=attribs)
 
     def get_processes(self):
         results = str(os.popen("tasklist /FI \"STATUS eq RUNNING\" /FI \"USERNAME eq %USERNAME%\"").read())
@@ -65,27 +62,35 @@ class StudentXML(object):
         return results
 
     def get_sites(self):
-        results = str(os.popen("netstat -nao | findstr /i \":80 :443\"").read())  # TODO: beznadziejnie działa - nie wszystko znajduje
+        """
+        to nie działa jakby się chciało. Może do :443 się przyda
+        """
+        results = str(os.popen("netstat -nao | findstr /i \":80 :443\"").read())
         results = re.findall(r'\s*TCP\s*'
                              r'(\d{1,3}\.\d{1,3}\.\d{1,3}\.\d{1,3}:\d+)\s*'
                              r'(\d{1,3}\.\d{1,3}\.\d{1,3}\.\d{1,3}):\d+\s*'
                              r'(\w+)\s*'
                              r'(\d+)', results, re.I)
-
         return results
+
+    def get_urls(self):
+        with TCPSniffer() as tcp_sniffer:
+            site_url = tcp_sniffer.get_http_referer()
+            if site_url:
+                self.url_list.append(site_url[0])
 
 
 if __name__ == '__main__':
+
+    def infite_url_capturing(s):
+        while True:
+            s.get_urls()
+
     s = StudentXML('127.0.0.1:123', 'tadek')
-    s.get_sites()
+    capturing_thread = Thread(target=infite_url_capturing, args=(s,))
+    capturing_thread.start()
 
+    while time.process_time() < 5:
+        pass
 
-
-
-
-    """                google_ips = re.findall(r'\s*(\d+\.\d+\.\d+)', str(os.popen('nslookup google.com').read()))
-                google_ips += re.findall(r'\s*(\d+\.\d+\.\d+)', str(os.popen('nslookup google.pl').read()))
-
-                gmail_ips = re.findall(r'\s*(\d+\.\d+\.\d+)', str(os.popen('nslookup mail.google.com').read()))
-
-                youtube_ips = re.findall(r'\s*(\d+\.\d+\.\d+)', str(os.popen('nslookup youtube.com').read()))"""
+    s.generate_document()
