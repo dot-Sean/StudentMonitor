@@ -99,5 +99,4 @@ $RECYCLE.BIN/
 
 # Windows shortcuts
 *.lnk
-ServerClient/filename.xml
-ServerClient/.idea/workspace.xml
+ServerClient/.idea/
