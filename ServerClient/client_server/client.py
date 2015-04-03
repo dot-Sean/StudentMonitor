@@ -1,11 +1,12 @@
 import socket
 import os
-import shutil
-from config import PORT, DOCUMENTS_PATH, RECONNECT_TIME, COLLECTING_TIME, EOF_MSG, XML_NAME, SCREENSHOT_NAME
 from threading import Thread
-from PIL import ImageGrab
-from studentXml import StudentXML
 from time import sleep
+
+from PIL import ImageGrab
+
+from client_server.config import PORT, DOCUMENTS_PATH, RECONNECT_TIME, COLLECTING_TIME, EOF_MSG, XML_NAME, SCREENSHOT_NAME
+from client_server.studentXml import StudentXML
 
 
 class Client(object):
@@ -14,6 +15,7 @@ class Client(object):
 
             if not os.path.exists(DOCUMENTS_PATH):
                 os.makedirs(DOCUMENTS_PATH)
+
             self.username = socket.gethostname()
             self.s = socket.socket()
             self.host = socket.gethostname()  # Get local machine name
@@ -21,6 +23,9 @@ class Client(object):
             self.doc_maker = StudentXML(socket.gethostbyname(self.host), self.username)
 
             self.s.send(self.username.encode())
+
+            urls_capture_thread = Thread(target=self.capture_http, args=())
+            urls_capture_thread.start()
 
         except ConnectionRefusedError:
             from time import sleep
@@ -89,6 +94,9 @@ class Client(object):
         except:
             print("Error occured:", self.send_all.__name__)
 
+    def capture_http(self):
+        while True:
+            self.doc_maker.get_urls()
 
 if __name__ == '__main__':
     c1 = Client(PORT)
@@ -96,18 +104,3 @@ if __name__ == '__main__':
     t1 = Thread(target=c1.start_routine, args=())
     t1.start()
     t1.join()
-
-
-    #t1 = Thread(target=c1.send_XML, args=())
-    #t2 = Thread(target=c2.send_XML, args=())
-
-    #t1.start()
-
-    #from time import sleep
-
-    #sleep(3)
-
-    #t2.start()
-
-    #t1.join()
-    #t2.join()

@@ -5,7 +5,7 @@ import sys
 from _thread import start_new_thread
 import time
 
-from config import *
+from client_server.config import *
 
 
 class ServerSM(object):
@@ -21,6 +21,7 @@ class ServerSM(object):
 
         self.s.listen(10)
 
+        print('[%s] The server has just started' % str(time.strftime("%H:%M:%S")))
         self.wait_for_clients()
 
     def wait_for_clients(self):
@@ -70,14 +71,14 @@ class ServerSM(object):
 
     def serve_xml(self, conn, addr, msg):
         username = None
+
         for x in range(len(self.users_data) - 1, -1, -1):
             if self.users_data[x][1] == addr[1]:
                 username = self.users_data[x][2]
 
-        if username is not None and not os.path.exists(username):
-            os.makedirs(username)
+        user_path = self.make_dirs(username)
 
-        f = open(username + '\\recv_xml_' + str(time.strftime("%H-%M-%S")) + '.xml', 'wb')
+        f = open(os.path.join(user_path, 'doc_' + str(time.strftime("%H-%M-%S")) + '.xml'), 'wb')
 
         print('Starting', msg, addr)
         l = conn.recv(1024)
@@ -94,10 +95,9 @@ class ServerSM(object):
             if self.users_data[x][1] == addr[1]:
                 username = self.users_data[x][2]
 
-        if username is not None and not os.path.exists(username):
-            os.makedirs(username)
+        user_path = self.make_dirs(username)
 
-        f = open(username + '\\recv_image_' + str(time.strftime("%H-%M-%S")) + '.jpg', 'wb')
+        f = open(os.path.join(user_path, 'img_' + str(time.strftime("%H-%M-%S")) + '.jpg'), 'wb')
 
         print('Starting', msg, addr)
         l = conn.recv(1024)
@@ -107,6 +107,16 @@ class ServerSM(object):
         f.close()
         print('Done', msg)
         msg = None
+
+    def make_dirs(self, username):
+        user_path = None
+
+        if username is not None:
+            user_path = os.path.join(DOCUMENTS_DIRECTORY, username)
+            if not os.path.exists(user_path):
+                os.makedirs(user_path)
+        return user_path
+
 
 if __name__ == '__main__':
     s = ServerSM(HOST, PORT)

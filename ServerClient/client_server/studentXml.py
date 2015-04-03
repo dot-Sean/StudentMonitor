@@ -3,8 +3,9 @@ from threading import Thread
 import xml.etree.cElementTree as et
 import time
 import re
-from config import DOCUMENTS_PATH, XML_NAME
-from packetSniffer import TCPSniffer
+
+from client_server.config import DOCUMENTS_PATH, XML_NAME
+from client_server.packetSniffer import TCPSniffer
 
 
 class StudentXML(object):
@@ -28,6 +29,9 @@ class StudentXML(object):
         self.tree = et.ElementTree(self.root)
 
     def generate_document(self, file_path=os.path.join(DOCUMENTS_PATH, XML_NAME)):
+        datetime_attrib = str(time.strftime("%d-%m-%Y %H:%M:%S"))
+        self.data_element.set('datetime', datetime_attrib)
+
         self.processes_to_tree()
         self.sites_to_tree()
         self.tree.write(file_path)

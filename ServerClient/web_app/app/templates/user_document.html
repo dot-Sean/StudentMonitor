@@ -1,0 +1,23 @@
+{% extends "base.html" %}
+
+{% block content %}
+    {% with message = get_flashed_messages() %}
+    {% if message %}
+    <h1>{{ message[0] }}</h1>
+    {% else %}
+    <div class="content">
+        <div class="left">
+            testowe lewo
+        </div>
+        <div class="right">
+            testowe prawo
+        </div>
+    </div>
+    <div class="images">
+        {% for image in user_files.ss_names %}
+        <img src="{{ ss_dir }}\{{ image }}"/>
+        {% endfor %}
+    </div>
+    {% endif %}
+    {% endwith %}
+{% endblock %}

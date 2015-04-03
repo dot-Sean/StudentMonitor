@@ -1,10 +1,13 @@
 from os.path import join, dirname
 
+
 HOST = ''  # '' czyli wszystkie interfejsy
 
 PORT = 23081
 
-DOCUMENTS_PATH = join(dirname(__file__), 'SM_FILES')  # 'C:\\XML_DOCS\\'
+DOCUMENTS_PATH = join(dirname(__file__), 'SM_FILES')  # dla klienta
+
+DOCUMENTS_DIRECTORY = join(dirname(__file__), 'FILES')  # dla serwera
 
 COLLECTING_TIME = 5
 

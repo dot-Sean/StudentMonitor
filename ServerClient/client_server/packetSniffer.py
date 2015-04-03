@@ -165,6 +165,6 @@ if __name__ == '__main__':
         #       if port == 443:
         #            packet_data = tcpsniffer.get_tcp_data(data)
         #            print(packet_data)
-        while True:
-            with TCPSniffer() as tcpsniffer:
-                tcpsniffer.get_http_referer()
+
+        with TCPSniffer() as tcpsniffer:
+            tcpsniffer.get_http_referer()

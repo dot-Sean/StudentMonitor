@@ -1,0 +1,10 @@
+{% extends "base.html" %}
+
+{% block content %}
+<ul>
+    <h1>Komputery w pracowni:</h1>
+    {% for document in documents %}
+    <li><a href="{{ document.username }}">{{ document.username }}</a></li>
+    {% endfor %}
+</ul>
+{% endblock %}
