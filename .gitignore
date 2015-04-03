@@ -101,3 +101,4 @@ $RECYCLE.BIN/
 *.lnk
 ServerClient/.idea/
 ServerClient/client_server/FILES
+ServerClient/client_server/SM_FILES
