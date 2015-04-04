@@ -15,7 +15,7 @@
     </div>
     <div class="images">
         {% for image in user_files.ss_names %}
-        <img src="{{ ss_dir }}\{{ image }}"/>
+        <img class="screenshot" src="{{ url_for('static', filename='FILES/' + user_files.username + '/' + image) }}"/>
         {% endfor %}
     </div>
     {% endif %}

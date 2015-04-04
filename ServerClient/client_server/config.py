@@ -7,7 +7,10 @@ PORT = 23081
 
 DOCUMENTS_PATH = join(dirname(__file__), 'SM_FILES')  # dla klienta
 
-DOCUMENTS_DIRECTORY = join(dirname(__file__), 'FILES')  # dla serwera
+#DOCUMENTS_DIRECTORY = join(dirname(__file__), 'FILES')  # dla serwera
+
+from web_app.config import DOCS_DIR
+DOCUMENTS_DIRECTORY = DOCS_DIR  # dla serwera
 
 COLLECTING_TIME = 5
 

@@ -1,8 +1,8 @@
 import os
 from flask import render_template, flash
 from web_app.app import app
-from client_server.config import DOCUMENTS_DIRECTORY
 from web_app.app.user_files import UserFiles
+from web_app.config import DOCS_DIR
 
 
 @app.route('/')
@@ -27,5 +27,6 @@ def user_files(username):
 
     return render_template("user_document.html",
                            user_files=user_files,
-                           ss_dir=os.path.join(DOCUMENTS_DIRECTORY, username)
+                           ss_dir=os.path.join(DOCS_DIR, username),
+                           title=username
                            )

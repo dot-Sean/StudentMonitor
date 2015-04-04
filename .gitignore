@@ -100,5 +100,5 @@ $RECYCLE.BIN/
 # Windows shortcuts
 *.lnk
 ServerClient/.idea/
-ServerClient/client_server/FILES
+ServerClient/web_app/app/static/FILES
 ServerClient/client_server/SM_FILES
