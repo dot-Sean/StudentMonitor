@@ -5,18 +5,39 @@
     {% if message %}
     <h1>{{ message[0] }}</h1>
     {% else %}
-    <div class="content">
-        <div class="left">
-            testowe lewo
+    <div class="wrapper">
+        <div class="content">
+            <div class="left">
+                <p>
+                    <h1>Procesy:</h1>
+                    <ul>
+                        {% if user_files.processes %}
+                        {% for process in user_files.processes %}
+                        <li>{{ process }}</li>
+                        {% endfor %}
+                        {% endif %}
+                    </ul>
+                </p>
+            </div>
+            <div class="right">
+                <p>
+                    <h1>Strony:</h1>
+                    <ul>
+                        {% if user_files.sites %}
+                        {% for site in user_files.sites %}
+                        <li>{{ site }}</li>
+                        {% endfor %}
+                        {% endif %}
+                    </ul>
+                </p>
+            </div>
         </div>
-        <div class="right">
-            testowe prawo
+        <div class="images">
+            <h1>Zdjęcia ekranu:</h1>
+            {% for image in user_files.ss_names %}
+            <img class="screenshot" src="{{ url_for('static', filename='FILES/' + user_files.username + '/' + image) }}"/>
+            {% endfor %}
         </div>
-    </div>
-    <div class="images">
-        {% for image in user_files.ss_names %}
-        <img class="screenshot" src="{{ url_for('static', filename='FILES/' + user_files.username + '/' + image) }}"/>
-        {% endfor %}
     </div>
     {% endif %}
     {% endwith %}

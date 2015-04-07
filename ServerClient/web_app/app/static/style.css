@@ -1,18 +1,39 @@
-.content{
-    width: 850px;
+div {
+    height: 100%;
+    width: 100%;
+}
+
+p {
+
+}
+
+.wrapper{
+    width: 1000px;
     margin: auto;
 }
 
 .left{
+    width: 45%;
+    margin: 5px;
+    float: left;
+    background-color: red;
 }
 
 .right{
+    float: right;
+    width: 45%;
+    margin: 5px;
+    background-color: yellow;
 }
 
 .images{
     text-align: center;
+    background-color: blue;
+    position: relative;
+    clear: both;
 }
 
 .screenshot{
     max-width: 1000px;
 }
+

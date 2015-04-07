@@ -5,8 +5,8 @@ from time import sleep
 
 from PIL import ImageGrab
 
-from client_server.config import PORT, DOCUMENTS_PATH, RECONNECT_TIME, COLLECTING_TIME, EOF_MSG, XML_NAME, SCREENSHOT_NAME
-from client_server.studentXml import StudentXML
+from config import PORT, DOCUMENTS_PATH, RECONNECT_TIME, COLLECTING_TIME, EOF_MSG, XML_NAME, SCREENSHOT_NAME
+from studentXml import StudentXML
 
 
 class Client(object):

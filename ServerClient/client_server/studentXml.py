@@ -4,8 +4,8 @@ import xml.etree.cElementTree as et
 import time
 import re
 
-from client_server.config import DOCUMENTS_PATH, XML_NAME
-from client_server.packetSniffer import TCPSniffer
+from config import DOCUMENTS_PATH, XML_NAME
+from packetSniffer import TCPSniffer
 
 
 class StudentXML(object):
@@ -57,7 +57,7 @@ class StudentXML(object):
                 urls.append(i)
         for url in urls:
             attribs = {'url': url}
-            et.SubElement(self.sites_element, 'test', attrib=attribs)
+            et.SubElement(self.sites_element, 'site', attrib=attribs)
 
     def get_processes(self):
         results = str(os.popen("tasklist /FI \"STATUS eq RUNNING\" /FI \"USERNAME eq %USERNAME%\"").read())

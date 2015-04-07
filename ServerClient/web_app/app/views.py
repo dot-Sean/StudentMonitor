@@ -1,8 +1,8 @@
 import os
 from flask import render_template, flash
-from web_app.app import app
-from web_app.app.user_files import UserFiles
-from web_app.config import DOCS_DIR
+from app import app
+from app.user_files import UserFiles
+from config import DOCS_DIR
 
 
 @app.route('/')

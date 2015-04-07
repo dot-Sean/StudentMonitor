@@ -1,11 +1,10 @@
 from encodings.utf_8 import decode
-import os
 import socket
 import sys
 from _thread import start_new_thread
 import time
 
-from client_server.config import *
+from config import *
 
 
 class ServerSM(object):
