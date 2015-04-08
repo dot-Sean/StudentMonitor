@@ -10,8 +10,6 @@ class UserFiles(object):
         self.ss_names = self.list_files('.jpg')
         self.xml_names = self.list_files('.xml')
 
-        #self.processes = self.get_processes()
-        #self.sites = self.get_sites()
         self.processes = []
         self.sites = []
         self.get_data()

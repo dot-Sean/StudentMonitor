@@ -11,8 +11,8 @@
                 <p>
                     <h1>Procesy:</h1>
                     <ul>
-                        {% if user_files.processes %}
-                        {% for process in user_files.processes %}
+                        {% if user.processes %}
+                        {% for process in user.processes %}
                         <li>{{ process }}</li>
                         {% endfor %}
                         {% endif %}
@@ -23,8 +23,8 @@
                 <p>
                     <h1>Strony:</h1>
                     <ul>
-                        {% if user_files.sites %}
-                        {% for site in user_files.sites %}
+                        {% if user.sites %}
+                        {% for site in user.sites %}
                         <li>{{ site }}</li>
                         {% endfor %}
                         {% endif %}
@@ -34,8 +34,8 @@
         </div>
         <div class="images">
             <h1>Zdjęcia ekranu:</h1>
-            {% for image in user_files.ss_names %}
-            <img class="screenshot" src="{{ url_for('static', filename='FILES/' + user_files.username + '/' + image) }}"/>
+            {% for image in user.ss_names %}
+            <img class="screenshot" src="{{ url_for('static', filename='FILES/' + user.username + '/' + image) }}"/>
             {% endfor %}
         </div>
     </div>

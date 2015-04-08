@@ -8,11 +8,10 @@ from config import DOCS_DIR
 @app.route('/')
 @app.route('/index')
 def index():
-    documents = [
-        {'username': 'BURCHARDTIST-PC'},
-        {'username': 'aśka'},
-        {'username': 'krzysiek'}
-    ]
+    users = os.listdir(DOCS_DIR)
+    documents = []
+    for user in users:
+        documents.append({'username': user})
 
     return render_template("index.html",
                            title='Lista komputerów',
@@ -21,12 +20,13 @@ def index():
 
 @app.route('/<username>')
 def user_files(username):
-    user_files = UserFiles(username)
-    if not user_files:
-        flash('Dokument komputera %s nie istnieje' % username)
+    user = None
+    if os.path.isdir(os.path.join(DOCS_DIR, username)):
+        user = UserFiles(username)
+    else:
+        flash('Folder komputera %s nie istnieje' % username)
 
     return render_template("user_document.html",
-                           user_files=user_files,
-                           ss_dir=os.path.join(DOCS_DIR, username),
-                           title=username
+                           user=user,
+                           title=username,
                            )
