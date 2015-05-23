@@ -3,12 +3,14 @@ import socket
 import sys
 from _thread import start_new_thread
 import time
+import os
 
 from config import *
 
 
 class ServerSM(object):
     users_data = []
+    stopped = False
 
     def __init__(self, host, port):
         self.s = socket.socket()
@@ -21,10 +23,12 @@ class ServerSM(object):
         self.s.listen(10)
 
         print('[%s] The server has just started' % str(time.strftime("%H:%M:%S")))
-        self.wait_for_clients()
+
+    def __del__(self):
+        print("[%s] Server has just disconnected" % str(time.strftime("%H:%M:%S")))
 
     def wait_for_clients(self):
-        while True:
+        while not self.stopped:
             conn, addr = self.s.accept()
             username = conn.recv(1024)
             username = decode(username)[0]
@@ -36,7 +40,7 @@ class ServerSM(object):
             self.users_data.append(addr)
 
             connected_users = [ip + ':' + str(port) + ' - ' + username for (ip, port, username) in self.users_data]
-            print("Polaczono ", connected_users[-1])
+            print("Connected with ", connected_users[-1])
 
             start_new_thread(self.client_recv, (conn, addr,))
 
